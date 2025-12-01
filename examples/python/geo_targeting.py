@@ -28,7 +28,7 @@ client = ThordataClient(
 
 
 def main() -> None:
-    url = "http://httpbin.org/headers"
+    url = "https://ipinfo.thordata.com"
     country = "us"  # change to "de", "gb", etc. depending on your account
 
     print(f"Requesting {url} via Thordata proxy (country={country})")
