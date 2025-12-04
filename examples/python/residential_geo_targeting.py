@@ -22,6 +22,8 @@ Usage:
            python examples/python/residential_geo_targeting.py
 """
 
+from __future__ import annotations
+
 import os
 from typing import Dict
 
@@ -39,7 +41,7 @@ if not USERNAME or not PASSWORD:
         "in your .env file."
     )
 
-
+# Residential proxy hostname/port; adjust according to your region/plan
 PROXY_HOST = os.getenv("THORDATA_RESIDENTIAL_HOST", "t.na.thordata.net:9999")
 
 TARGET_URL = "https://ipinfo.thordata.com"
@@ -65,19 +67,19 @@ def build_proxy_username(
     """
     parts = [f"td-customer-{username}"]
 
-    # continent-level
+    # Continent-level
     if continent:
         parts.append(f"continent-{continent.lower()}")
 
-    # country-level
+    # Country-level
     if country:
         parts.append(f"country-{country.lower()}")
 
-    # state-level (must be used with country)
+    # State-level (must be used with country)
     if state:
         parts.append(f"state-{state.lower()}")
 
-    # city-level (must be used with country)
+    # City-level (must be used with country)
     if city:
         parts.append(f"city-{city.lower()}")
 
@@ -99,7 +101,26 @@ def request_with_proxy(proxy_username: str) -> None:
     print(f"Proxy server: {PROXY_HOST}")
     resp = requests.get(TARGET_URL, proxies=proxies, timeout=30)
     resp.raise_for_status()
-    print("Response:", resp.text)
+
+    # Try to parse JSON (ipinfo-style)
+    try:
+        data = resp.json()
+    except ValueError:
+        # Fallback if the endpoint ever returns non-JSON
+        print("Raw response:", resp.text)
+        return
+
+    ip = data.get("ip")
+    country = data.get("country") or data.get("country_name")
+    region = data.get("region") or data.get("state")
+    city = data.get("city")
+
+    print("IP info JSON:", data)
+    print("Parsed fields:")
+    print(f"  IP      : {ip}")
+    print(f"  Country : {country}")
+    print(f"  Region  : {region}")
+    print(f"  City    : {city}")
 
 
 def main() -> None:

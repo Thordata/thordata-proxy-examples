@@ -8,6 +8,40 @@ Minimal, copy‑pasteable examples showing how to use **Thordata's proxy network
 
 ---
 
+## 🔐 Authentication modes
+
+Thordata proxy gateway supports two common authentication modes:
+
+### 1. Token / username mode (used in most examples)
+
+```text
+http://<SCRAPER_TOKEN>:@gate.thordata.com:22225
+```
+
+This is convenient when you run from many different machines.
+The token is embedded in the proxy URL and authenticated on each request.
+
+### 2. IP whitelist mode (no username/password in the URL)
+
+Add your server's public IP address to the "IP whitelist" section in
+the Thordata Dashboard.
+
+Use a plain proxy URL without credentials:
+
+```text
+http://gate.thordata.com:22225
+```
+
+See `examples/python/ip_whitelist_mode.py` for a complete example
+using requests:
+
+```bash
+python examples/python/ip_whitelist_mode.py
+```
+
+This mode is useful when you don't want to embed secrets in code or
+configuration files.
+
 ## 🎯 What's in this repo?
 
 - **Python examples**  

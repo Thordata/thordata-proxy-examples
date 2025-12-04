@@ -4,11 +4,24 @@ Geo-targeted request via Thordata proxy network.
 This example shows how to send a request that appears to come from a specific
 country/region (if your Thordata plan supports geo-targeting).
 
-Usage:
+We call https://ipinfo.thordata.com via the Thordata proxy and instruct the
+gateway to use a specific country, so that the reported IP/location reflect
+that geo-targeting.
+
+Usage (from repo root):
+
+    # Default: country=us
     python examples/python/geo_targeting.py
+
+    # Custom country:
+    python examples/python/geo_targeting.py --country de
 """
 
+from __future__ import annotations
+
+import argparse
 import os
+from typing import Any, Dict
 
 from dotenv import load_dotenv
 from thordata import ThordataClient
@@ -27,21 +40,57 @@ client = ThordataClient(
 )
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Geo-targeted IP info via Thordata proxy.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--country",
+        "-c",
+        type=str,
+        default="us",
+        help="Target country code (e.g. 'us', 'de', 'fr').",
+    )
+    return parser.parse_args()
+
+
+def pretty_print_ipinfo(data: Dict[str, Any]) -> None:
+    """
+    Pretty-print a typical ipinfo-style JSON response.
+
+    We don't rely on a strict schema here; we just try common keys.
+    """
+    ip = data.get("ip")
+    country = data.get("country") or data.get("country_name")
+    region = data.get("region") or data.get("state")
+    city = data.get("city")
+
+    print("IP info JSON:", data)
+    print("\nParsed fields:")
+    print(f"  IP      : {ip}")
+    print(f"  Country : {country}")
+    print(f"  Region  : {region}")
+    print(f"  City    : {city}")
+
+
 def main() -> None:
+    args = parse_args()
+
     url = "https://ipinfo.thordata.com"
-    country = "us"  # change to "de", "gb", etc. depending on your account
+    country = args.country.lower()
 
     print(f"Requesting {url} via Thordata proxy (country={country})")
 
-    # Geo-targeting is typically done via query params or headers.
-    # Here we demonstrate passing 'country' as a query param for illustration.
-    resp = client.get(f"{url}?X-Thordata-Country={country}", timeout=30)
+    # Geo-targeting is implemented on the Thordata gateway side.
+    # Here we demonstrate passing 'X-Thordata-Country' as a query parameter.
+    params = {"X-Thordata-Country": country}
+
+    resp = client.get(url, params=params, timeout=30)
     resp.raise_for_status()
 
     data = resp.json()
-    print("Response headers seen by httpbin.org:")
-    for k, v in data.get("headers", {}).items():
-        print(f"  {k}: {v}")
+    pretty_print_ipinfo(data)
 
 
 if __name__ == "__main__":
