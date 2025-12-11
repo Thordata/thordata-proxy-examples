@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Check Python syntax
+        run: |
+          python -m py_compile examples/python/*.py
+          echo "✅ Python syntax OK"
+
+  check-node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      
+      - name: Check Node.js syntax
+        run: |
+          cd examples/nodejs
+          npm install
+          node --check *.js
+          echo "✅ Node.js syntax OK"
+
+  check-go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.21"
+      
+      - name: Check Go syntax
+        run: |
+          cd examples/go
+          go build ./...
+          echo "✅ Go syntax OK"
+
+  check-shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Check shell scripts
+        run: |
+          shellcheck examples/curl/*.sh || true
+          echo "✅ Shell scripts checked"
