@@ -1,126 +1,215 @@
-# 🛰️ Thordata Proxy Examples
+# 🌐 Thordata Proxy Examples
 
-Minimal, copy‑pasteable examples showing how to use **Thordata's proxy network**
-(Residential / Mobile / Datacenter) from Python and curl.
+<div align="center">
 
-> For the full SDK, see  
-> [thordata-python-sdk](https://github.com/Thordata/thordata-python-sdk).
+**Complete examples for using Thordata's proxy network across multiple languages.**
+
+[![Python](https://img.shields.io/badge/Python-3.8+-blue?logo=python&logoColor=white)](examples/python/)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green?logo=node.js&logoColor=white)](examples/nodejs/)
+[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)](examples/go/)
+[![curl](https://img.shields.io/badge/curl-grey?logo=curl&logoColor=white)](examples/curl/)
+
+[Thordata Dashboard](https://www.thordata.com) • [Python SDK](https://github.com/Thordata/thordata-python-sdk) • [Documentation](https://doc.thordata.com)
+
+</div>
 
 ---
-
-## 🔐 Authentication modes
-
-Thordata proxy gateway supports two common authentication modes:
-
-### 1. Token / username mode (used in most examples)
-
-```text
-http://<SCRAPER_TOKEN>:@gate.thordata.com:22225
-```
-
-This is convenient when you run from many different machines.
-The token is embedded in the proxy URL and authenticated on each request.
-
-### 2. IP whitelist mode (no username/password in the URL)
-
-Add your server's public IP address to the "IP whitelist" section in
-the Thordata Dashboard.
-
-Use a plain proxy URL without credentials:
-
-```text
-http://gate.thordata.com:22225
-```
-
-See `examples/python/ip_whitelist_mode.py` for a complete example
-using requests:
-
-```bash
-python examples/python/ip_whitelist_mode.py
-```
-
-This mode is useful when you don't want to embed secrets in code or
-configuration files.
 
 ## 🎯 What's in this repo?
 
-- **Python examples**  
-  - `examples/python/simple_ip_check.py` – basic IP check via proxy gateway  
-  - `examples/python/geo_targeting.py` – illustrate geo‑targeted requests  
-  - `examples/python/concurrent_requests.py` – high‑concurrency requests via `AsyncThordataClient`
+Copy-paste ready examples showing how to use **Thordata's proxy network** (Residential, Mobile, Datacenter, ISP) from multiple programming languages.
 
-- **curl example**  
-  - `examples/curl/basic_proxy.sh` – quick IP check using curl and the Thordata gateway
+| Language | Examples | Description |
+|----------|----------|-------------|
+| [Python](examples/python/) | 7 examples | Using official SDK with ProxyConfig, async, error handling |
+| [Node.js](examples/nodejs/) | 3 examples | Using axios with proxy configuration |
+| [Go](examples/go/) | 2 examples | Using net/http with proxy |
+| [curl](examples/curl/) | 3 examples | Quick command-line testing |
 
 ---
 
-## ⚙️ Setup
+## 🔐 Authentication Modes
 
-### 1. Clone
+Thordata supports two authentication modes:
+
+### 1. Username/Password Mode (Recommended)
+
+Credentials are embedded in the proxy URL:
+
+```
+http://td-customer-{USERNAME}-country-{COUNTRY}:{PASSWORD}@{HOST}:{PORT}
+```
+
+**Example:**
+
+```bash
+curl -x "http://td-customer-myuser-country-us:mypassword@pr.thordata.net:9999" "https://httpbin.org/ip"
+```
+
+### 2. IP Whitelist Mode
+
+Add your server's IP to the Dashboard whitelist, then use proxy without credentials:
+
+```bash
+curl -x "http://pr.thordata.net:9999" "https://httpbin.org/ip"
+```
+
+---
+
+## 📦 Proxy Products & Ports
+
+| Product | Port | Use Case |
+|---------|------|----------|
+| Residential | 9999 | General scraping, geo-targeting |
+| Mobile | 5555 | Mobile-specific content |
+| Datacenter | 7777 | High-speed, cost-effective |
+| ISP (Static) | 6666 | Long-term sessions |
+
+---
+
+## ⚙️ Quick Setup
+
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Thordata/thordata-proxy-examples.git
 cd thordata-proxy-examples
 ```
 
-### 2. Create .env
-
-Copy `.env.example` to `.env` and fill in your token from the Thordata Dashboard:
+### 2. Configure credentials
 
 ```bash
-cp .env.example .env   # Windows: copy .env.example .env
+cp .env.example .env
+# Edit .env with your credentials from Thordata Dashboard
 ```
 
-### 3. Install dependencies (for Python examples)
+### 3. Run examples
+
+Choose your language:
 
 ```bash
+# Python
+cd examples/python
 pip install -r requirements.txt
+python 01_simple_ip_check.py
+
+# Node.js
+cd examples/nodejs
+npm install
+node 01_simple_ip_check.js
+
+# Go
+cd examples/go
+go run simple_ip_check.go
+
+# curl
+cd examples/curl
+export THORDATA_USERNAME=your_username
+export THORDATA_PASSWORD=your_password
+bash 01_basic_proxy.sh
 ```
 
 ---
 
-## 🚀 Run the examples
+## 📖 Examples Overview
 
-### 1. Simple IP check (Python)
+### Python Examples
 
-```bash
-python examples/python/simple_ip_check.py
+| File | Description |
+|------|-------------|
+| `01_simple_ip_check.py` | Basic IP verification through proxy |
+| `02_geo_targeting.py` | Request from specific country/state/city |
+| `03_sticky_session.py` | Maintain same IP across requests |
+| `04_concurrent_requests.py` | High-concurrency async requests |
+| `05_different_products.py` | Residential vs Mobile vs Datacenter |
+| `06_ip_whitelist_mode.py` | Using IP whitelist authentication |
+| `07_error_handling.py` | Proper error handling patterns |
+
+### Node.js Examples
+
+| File | Description |
+|------|-------------|
+| `01_simple_ip_check.js` | Basic proxy request with axios |
+| `02_geo_targeting.js` | Geo-targeted requests |
+| `03_concurrent_requests.js` | Parallel requests with Promise.all |
+
+### Go Examples
+
+| File | Description |
+|------|-------------|
+| `simple_ip_check.go` | Basic proxy request |
+| `geo_targeting.go` | Geo-targeted requests |
+
+### curl Examples
+
+| File | Description |
+|------|-------------|
+| `01_basic_proxy.sh` | Simple proxy test |
+| `02_geo_targeting.sh` | Country/city targeting |
+| `03_sticky_session.sh` | Session persistence |
+
+---
+
+## 🌍 Geo-Targeting Parameters
+
+Embed targeting in the username:
+
+```
+td-customer-{USERNAME}[-continent-{CODE}][-country-{CODE}][-state-{NAME}][-city-{NAME}][-asn-{CODE}]
 ```
 
-You should see a JSON response from `http://httpbin.org/ip` and an origin IP
-that belongs to the Thordata proxy network (not your local machine).
-
-### 2. Geo‑targeted request (Python)
+**Examples:**
 
 ```bash
-python examples/python/geo_targeting.py
-```
+# United States
+td-customer-myuser-country-us
 
-Adjust the country variable in the script to test different regions,
-depending on your Thordata plan.
+# California, USA
+td-customer-myuser-country-us-state-california
 
-### 3. Concurrent requests (Python, async)
+# Los Angeles, California, USA
+td-customer-myuser-country-us-state-california-city-los_angeles
 
-```bash
-python examples/python/concurrent_requests.py
-```
-
-This will send multiple IP check requests in parallel through the proxy network,
-using `AsyncThordataClient`.
-
-### 4. Basic curl example
-
-```bash
-export THORDATA_SCRAPER_TOKEN=your_token_here
-bash examples/curl/basic_proxy.sh
+# Specific ISP (ASN)
+td-customer-myuser-country-us-asn-AS7922
 ```
 
 ---
 
-## 📝 Notes
+## 🔄 Sticky Sessions
 
-- These examples focus on proxy usage only. For SERP / Universal / Web Scraper
-  APIs, see the SDK and the thordata-cookbook.
-- Do not commit your `.env` file or real tokens.
+Keep the same IP for multiple requests:
+
+```
+td-customer-{USERNAME}-sessid-{SESSION_ID}-sesstime-{MINUTES}
+```
+
+**Example:**
+
+```bash
+# Same IP for 10 minutes
+td-customer-myuser-country-us-sessid-abc123-sesstime-10
+```
 
 ---
+
+## ⚠️ Important Notes
+
+- Don't commit credentials - Keep `.env` in `.gitignore`
+- Respect rate limits - Check your plan's concurrency limits
+- Use appropriate product - Residential for sensitive sites, Datacenter for speed
+- Handle errors - Implement retry logic for transient failures
+
+---
+
+## 🔗 Related Resources
+
+- **[Thordata Python SDK](https://github.com/Thordata/thordata-python-sdk)** - Full-featured Python client
+- **[Thordata Cookbook](https://github.com/Thordata/thordata-cookbook)** - AI/LLM integration examples
+- **[Documentation](https://doc.thordata.com)** - Complete API reference
+
+---
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
