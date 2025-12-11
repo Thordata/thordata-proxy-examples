@@ -43,16 +43,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: "1.21"
-      
+
       - name: Check Go syntax
         run: |
           cd examples/go
-          go build ./...
+          # Compile each file separately
+          for file in *.go; do
+            echo "Checking $file..."
+            go build -o /dev/null "$file"
+          done
           echo "✅ Go syntax OK"
 
   check-shell:
