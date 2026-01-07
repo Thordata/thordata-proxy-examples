@@ -10,8 +10,8 @@ export THORDATA_USERNAME=your_username
 export THORDATA_PASSWORD=your_password
 
 # Run examples
-go run simple_ip_check.go
-go run geo_targeting.go
+go run simple_ip_check/main.go
+go run geo_targeting/main.go
 ```
 
 ---

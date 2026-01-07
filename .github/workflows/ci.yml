@@ -53,9 +53,9 @@ jobs:
         run: |
           cd examples/go
           # Compile each file separately
-          for file in *.go; do
-            echo "Checking $file..."
-            go build -o /dev/null "$file"
+          for dir in */; do
+            echo "Checking $dir..."
+            (cd "$dir" && go build -o /dev/null main.go)
           done
           echo "✅ Go syntax OK"
 

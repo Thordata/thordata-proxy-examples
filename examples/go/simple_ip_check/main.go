@@ -5,6 +5,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -12,9 +13,18 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
+func loadEnv() {
+
+	_ = godotenv.Load("../../.env")
+}
+
 func main() {
+	loadEnv()
+
 	username := os.Getenv("THORDATA_USERNAME")
 	password := os.Getenv("THORDATA_PASSWORD")
 	host := os.Getenv("THORDATA_PROXY_HOST")
@@ -42,16 +52,22 @@ func main() {
 	// Create HTTP client with proxy
 	client := &http.Client{
 		Transport: &http.Transport{
-			Proxy: http.ProxyURL(proxyURL),
+			Proxy:           http.ProxyURL(proxyURL),
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
 
 	targetURL := "https://httpbin.org/ip"
 	fmt.Printf("🌐 Requesting: %s\n", targetURL)
 	fmt.Println("   via Thordata proxy network...")
-	fmt.Println()
 
-	resp, err := client.Get(targetURL)
+	req, err := http.NewRequest("GET", targetURL, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
+
+	resp, err := client.Do(req)
 	if err != nil {
 		log.Fatalf("❌ Error: %v", err)
 	}
@@ -60,6 +76,11 @@ func main() {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalf("❌ Error reading response: %v", err)
+	}
+
+	if resp.StatusCode != 200 {
+		body, _ := io.ReadAll(resp.Body)
+		log.Fatalf("❌ Status %d: %s", resp.StatusCode, string(body))
 	}
 
 	var result map[string]interface{}
