@@ -11,7 +11,7 @@ npm install
 
 # Configure credentials
 cp ../../.env.example ../../.env
-# Edit .env with your credentials
+# Edit .env with your credentials (THORDATA_SCRAPER_TOKEN, THORDATA_RESIDENTIAL_USERNAME, THORDATA_RESIDENTIAL_PASSWORD)
 ```
 
 ---

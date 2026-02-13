@@ -20,9 +20,11 @@ load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 from thordata import ThordataClient, StickySession
 
-USERNAME = os.getenv("THORDATA_USERNAME")
-PASSWORD = os.getenv("THORDATA_PASSWORD")
+RESIDENTIAL_USERNAME = os.getenv("THORDATA_RESIDENTIAL_USERNAME")
+RESIDENTIAL_PASSWORD = os.getenv("THORDATA_RESIDENTIAL_PASSWORD")
 SCRAPER_TOKEN = os.getenv("THORDATA_SCRAPER_TOKEN")
+PROXY_HOST = os.getenv("THORDATA_PROXY_HOST")
+PROXY_PORT = os.getenv("THORDATA_PROXY_PORT")
 
 
 def parse_args():
@@ -50,29 +52,42 @@ def parse_args():
 def main():
     args = parse_args()
 
-    if not USERNAME or not PASSWORD:
-        print("❌ Error: Please set THORDATA_USERNAME and THORDATA_PASSWORD in .env")
+    if not RESIDENTIAL_USERNAME or not RESIDENTIAL_PASSWORD:
+        print("[ERROR] Error: Please set THORDATA_RESIDENTIAL_USERNAME and THORDATA_RESIDENTIAL_PASSWORD in .env")
+        sys.exit(1)
+
+    if not SCRAPER_TOKEN:
+        print("[ERROR] Error: Please set THORDATA_SCRAPER_TOKEN in .env")
         sys.exit(1)
 
     # Create a sticky session
     # This automatically generates a session ID and sets the duration
-    session = StickySession(
-        username=USERNAME,
-        password=PASSWORD,
-        country=args.country,
-        duration_minutes=args.duration,
-    )
+    sticky_kwargs: dict = {
+        "username": RESIDENTIAL_USERNAME,
+        "password": RESIDENTIAL_PASSWORD,
+        "country": args.country,
+        "duration_minutes": args.duration,
+    }
+    if PROXY_HOST:
+        sticky_kwargs["host"] = PROXY_HOST
+    if PROXY_PORT:
+        try:
+            sticky_kwargs["port"] = int(PROXY_PORT)
+        except ValueError:
+            pass
 
-    print(f"🔒 Sticky Session Configuration:")
+    session = StickySession(**sticky_kwargs)
+
+    print(f" Sticky Session Configuration:")
     print(f"   Session ID: {session.session_id}")
     print(f"   Duration:   {args.duration} minutes")
     print(f"   Country:    {args.country}")
     print()
 
-    client = ThordataClient(scraper_token=SCRAPER_TOKEN or "dummy")
+    client = ThordataClient(scraper_token=SCRAPER_TOKEN)
     url = "https://httpbin.org/ip"
 
-    print(f"📡 Making {args.requests} requests (should all show same IP):")
+    print(f" Making {args.requests} requests (should all show same IP):")
     print()
 
     ips = []
@@ -86,16 +101,16 @@ def main():
             print(f"   Request {i+1}: {ip}")
 
         except Exception as e:
-            print(f"   Request {i+1}: ❌ Error - {e}")
+            print(f"   Request {i+1}: [ERROR] Error - {e}")
 
     print()
 
     # Verify all IPs are the same
     unique_ips = set(ips)
     if len(unique_ips) == 1:
-        print(f"✅ Success! All {len(ips)} requests used the same IP: {ips[0]}")
+        print(f"[SUCCESS] Success! All {len(ips)} requests used the same IP: {ips[0]}")
     else:
-        print(f"⚠️  Warning: Got {len(unique_ips)} different IPs: {unique_ips}")
+        print(f"[WARNING]  Warning: Got {len(unique_ips)} different IPs: {unique_ips}")
         print("   This might happen if the session expired or there was an error.")
 
 

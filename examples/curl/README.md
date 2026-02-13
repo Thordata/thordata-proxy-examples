@@ -5,8 +5,8 @@ Quick command-line testing with Thordata proxy.
 ## Setup
 
 ```bash
-export THORDATA_USERNAME=your_username
-export THORDATA_PASSWORD=your_password
+export THORDATA_RESIDENTIAL_USERNAME=your_residential_username
+export THORDATA_RESIDENTIAL_PASSWORD=your_residential_password
 ```
 
 ---

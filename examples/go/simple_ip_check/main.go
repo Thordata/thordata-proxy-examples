@@ -25,8 +25,8 @@ func loadEnv() {
 func main() {
 	loadEnv()
 
-	username := os.Getenv("THORDATA_USERNAME")
-	password := os.Getenv("THORDATA_PASSWORD")
+	username := os.Getenv("THORDATA_RESIDENTIAL_USERNAME")
+	password := os.Getenv("THORDATA_RESIDENTIAL_PASSWORD")
 	host := os.Getenv("THORDATA_PROXY_HOST")
 	port := os.Getenv("THORDATA_PROXY_PORT")
 
@@ -38,7 +38,7 @@ func main() {
 	}
 
 	if username == "" || password == "" {
-		log.Fatal("❌ Error: Set THORDATA_USERNAME and THORDATA_PASSWORD")
+		log.Fatal("Error: Set THORDATA_RESIDENTIAL_USERNAME and THORDATA_RESIDENTIAL_PASSWORD")
 	}
 
 	// Build proxy URL

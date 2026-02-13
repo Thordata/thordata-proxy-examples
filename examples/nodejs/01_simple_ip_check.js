@@ -16,13 +16,13 @@ import { dirname, join } from 'path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: join(__dirname, '../../.env') });
 
-const USERNAME = process.env.THORDATA_USERNAME;
-const PASSWORD = process.env.THORDATA_PASSWORD;
+const USERNAME = process.env.THORDATA_RESIDENTIAL_USERNAME;
+const PASSWORD = process.env.THORDATA_RESIDENTIAL_PASSWORD;
 const HOST = process.env.THORDATA_PROXY_HOST || 'pr.thordata.net';
 const PORT = process.env.THORDATA_PROXY_PORT || '9999';
 
 if (!USERNAME || !PASSWORD) {
-    console.error('❌ Error: Set THORDATA_USERNAME and THORDATA_PASSWORD in .env');
+    console.error('[ERROR] Set THORDATA_RESIDENTIAL_USERNAME and THORDATA_RESIDENTIAL_PASSWORD in .env');
     process.exit(1);
 }
 
